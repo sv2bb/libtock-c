@@ -47,16 +47,17 @@ ELF2TAB_ARGS += --stack $(STACK_SIZE) --app-heap $(APP_HEAP_SIZE) --kernel-heap 
 override ASFLAGS += -mthumb
 override CFLAGS  += -std=gnu11
 override CPPFLAGS += \
-	    -frecord-gcc-switches\
-	    -O0\
-	    -fdata-sections -ffunction-sections\
-	    -fstack-usage -Wstack-usage=$(STACK_SIZE)\
-	    -Wall\
-	    -Wextra\
-	    -Wl,--warn-common\
-	    -Wl,--gc-sections\
-	    -Wl,--emit-relocs\
-      -Wl,--no-relax
+      -frecord-gcc-switches\
+      -gdwarf-2\
+      -Os\
+      -fdata-sections -ffunction-sections\
+      -fstack-usage -Wstack-usage=$(STACK_SIZE)\
+      -Wall\
+      -Wextra\
+      -Wl,--warn-common\
+      -Wl,--gc-sections\
+      -Wl,--emit-relocs\
+      -Wl,--no-relax      # 04/2019: Not sure if this is needed, should prevent use of global_pointer for riscv
 
 # Work around https://gcc.gnu.org/bugzilla/show_bug.cgi?id=85606
 override CPPFLAGS_cortex-m0 += -march=armv6s-m
