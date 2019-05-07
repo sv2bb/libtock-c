@@ -160,18 +160,18 @@ override CFLAGS += -Wold-style-definition #       # this garbage: void bar (a) i
 #CFLAGS += -Wtraditional-conversion #     # prototype causes a conversion different than w/o prototype (?)
 #                                         ^ real noisy
 
-# # CXX-only warnings
-# override CXXFLAGS += -Wctor-dtor-privacy #        # unusable class b/c everything private and no friends
-# override CXXFLAGS += -Wdelete-non-virtual-dtor #  # catches undefined behavior
-# override CXXFLAGS += -Wold-style-cast #           # C-style cast in C++ code
-# override CXXFLAGS += -Woverloaded-virtual #       # subclass shadowing makes parent impl's unavailable
-# override CXXFLAGS += -Wsign-promo #               # gcc did what spec requires, but probably not what you want
-# override CXXFLAGS += -Wstrict-null-sentinel #     # seems like a not-very-C++ thing to do? very unsure
-# override CXXFLAGS += -Wsuggest-final-methods #    # does what it sounds like
-# override CXXFLAGS += -Wsuggest-final-types #      # does what it sounds like
-# override CXXFLAGS += -Wsuggest-override #         # overridden virtual func w/out override keyword
-# override CXXFLAGS += -Wuseless-cast #             # pretty much what ya think here
-# override CXXFLAGS += -Wzero-as-null-pointer-constant # use of 0 as NULL
+# CXX-only warnings
+override CXXFLAGS += -Wctor-dtor-privacy #        # unusable class b/c everything private and no friends
+override CXXFLAGS += -Wdelete-non-virtual-dtor #  # catches undefined behavior
+override CXXFLAGS += -Wold-style-cast #           # C-style cast in C++ code
+override CXXFLAGS += -Woverloaded-virtual #       # subclass shadowing makes parent impl's unavailable
+override CXXFLAGS += -Wsign-promo #               # gcc did what spec requires, but probably not what you want
+override CXXFLAGS += -Wstrict-null-sentinel #     # seems like a not-very-C++ thing to do? very unsure
+override CXXFLAGS += -Wsuggest-final-methods #    # does what it sounds like
+override CXXFLAGS += -Wsuggest-final-types #      # does what it sounds like
+override CXXFLAGS += -Wsuggest-override #         # overridden virtual func w/out override keyword
+override CXXFLAGS += -Wuseless-cast #             # pretty much what ya think here
+override CXXFLAGS += -Wzero-as-null-pointer-constant # use of 0 as NULL
 
 # -Wc++-compat #                         # C/C++ compat issues
 # -Wc++11-compat #                       # C11 compat issues
