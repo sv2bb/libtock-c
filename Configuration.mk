@@ -44,8 +44,8 @@ ELF2TAB_ARGS += --stack $(STACK_SIZE) --app-heap $(APP_HEAP_SIZE) --kernel-heap 
 # Flags for building app Assembly, C, C++ files
 # n.b. make convention is that CPPFLAGS are shared for C and C++ sources
 # [CFLAGS is C only, CXXFLAGS is C++ only]
-# override ASFLAGS += -mthumb
-# override CFLAGS  += -std=gnu11
+override ASFLAGS += -mthumb
+override CFLAGS  += -std=gnu11
 override CPPFLAGS += \
 	    -frecord-gcc-switches\
 	    -O0\
@@ -92,72 +92,72 @@ LAYOUT ?= $(TOCK_USERLAND_BASE_DIR)/userland_generic.ld
 #CPPFLAGS += -Wswitch-default #           # switch w/out default (doesn't cover all cases) (maybe annoying?)
 #CFLAGS += -Wstrict-prototypes #          # function defined w/out specifying argument types
 
-# override CPPFLAGS += -Wdate-time #                # warn if __TIME__, __DATE__, or __TIMESTAMP__ used
-#                                          # ^on b/c flashing assumes same code => no flash, these enforce
-# override CPPFLAGS += -Wfloat-equal #              # floats used with '=' operator, likely imprecise
-# override CPPFLAGS += -Wformat-nonliteral #        # can't check format string (maybe disable if annoying)
-# override CPPFLAGS += -Wformat-security #          # using untrusted format strings (maybe disable)
-# override CPPFLAGS += -Wformat-y2k #               # use of strftime that assumes two digit years
-# override CPPFLAGS += -Winit-self #                # { int i = i }
-# override CPPFLAGS += -Wlogical-op #               # "suspicous use of logical operators in expressions" (a lint)
-# override CPPFLAGS += -Wmissing-declarations #     # ^same? not sure how these differ
-# override CPPFLAGS += -Wmissing-field-initializers # if init'ing struct w/out field names, warn if not all used
-# override CPPFLAGS += -Wmissing-format-attribute # # something looks printf-like but isn't marked as such
-# override CPPFLAGS += -Wmissing-noreturn #         # __attribute__((noreturn)) like -> ! in Rust, should use it
-# override CPPFLAGS += -Wmultichar #                # use of 'foo' instead of "foo" (surpised not on by default?)
-# override CPPFLAGS += -Wpointer-arith #            # sizeof things not define'd (i.e. sizeof(void))
-# override CPPFLAGS += -Wredundant-decls #          # { int i; int i; } (a lint)
-# override CPPFLAGS += -Wshadow #                   # int foo(int a) { int a = 1; } inner a shadows outer a
-# override CPPFLAGS += -Wtrampolines #              # attempt to generate a trampoline on the NX stack
-# override CPPFLAGS += -Wunused-macros #            # macro defined in this file not used
-# override CPPFLAGS += -Wunused-parameter #         # function parameter is unused aside from its declaration
-# override CPPFLAGS += -Wwrite-strings #            # { char* c = "foo"; c[0] = 'b' } <-- "foo" should be r/o
+override CPPFLAGS += -Wdate-time #                # warn if __TIME__, __DATE__, or __TIMESTAMP__ used
+                                         # ^on b/c flashing assumes same code => no flash, these enforce
+override CPPFLAGS += -Wfloat-equal #              # floats used with '=' operator, likely imprecise
+override CPPFLAGS += -Wformat-nonliteral #        # can't check format string (maybe disable if annoying)
+override CPPFLAGS += -Wformat-security #          # using untrusted format strings (maybe disable)
+override CPPFLAGS += -Wformat-y2k #               # use of strftime that assumes two digit years
+override CPPFLAGS += -Winit-self #                # { int i = i }
+override CPPFLAGS += -Wlogical-op #               # "suspicous use of logical operators in expressions" (a lint)
+override CPPFLAGS += -Wmissing-declarations #     # ^same? not sure how these differ
+override CPPFLAGS += -Wmissing-field-initializers # if init'ing struct w/out field names, warn if not all used
+override CPPFLAGS += -Wmissing-format-attribute # # something looks printf-like but isn't marked as such
+override CPPFLAGS += -Wmissing-noreturn #         # __attribute__((noreturn)) like -> ! in Rust, should use it
+override CPPFLAGS += -Wmultichar #                # use of 'foo' instead of "foo" (surpised not on by default?)
+override CPPFLAGS += -Wpointer-arith #            # sizeof things not define'd (i.e. sizeof(void))
+override CPPFLAGS += -Wredundant-decls #          # { int i; int i; } (a lint)
+override CPPFLAGS += -Wshadow #                   # int foo(int a) { int a = 1; } inner a shadows outer a
+override CPPFLAGS += -Wtrampolines #              # attempt to generate a trampoline on the NX stack
+override CPPFLAGS += -Wunused-macros #            # macro defined in this file not used
+override CPPFLAGS += -Wunused-parameter #         # function parameter is unused aside from its declaration
+override CPPFLAGS += -Wwrite-strings #            # { char* c = "foo"; c[0] = 'b' } <-- "foo" should be r/o
 
-# #CPPFLAGS += -Wabi -Wabi-tag              # inter-compiler abi issues
-# #CPPFLAGS += -Waggregate-return           # warn if things return struct's
-# #CPPFLAGS += -Wcast-align                 # { char *c; int *i = (int*) c}, 1 byte -> 4 byte align
-# #CPPFLAGS += -Wconversion                 # implicit conversion that may unexpectedly alter value
-# #                                         ^ A ton of these from syscalls I think, XXX look later
-# #CPPFLAGS += -Wdisabled-optimization      # gcc skipped an optimization for any of a thousand reasons
-# #CPPFLAGS += -Wdouble-promotion           # warn if float -> double implicitly XXX maybe?
-# #CPPFLAGS += -Wformat-signedness #        # { int i; printf("%d %u", i, i) } second bad (maybe annoying?)
-# #                                         ^ Too obnoxious when you want hex of an int
-# #CPPFLAGS += -Wfloat-conversion           # subset of -Wconversion
-# #CPPFLAGS += -Winline                     # something marked `inline` wasn't inlined
-# #CPPFLAGS += -Winvalid-pch                # bad precompiled header found in an include dir
-# #CPPFLAGS += -Wmissing-include-dirs -- XXX Didn't try, afriad could be annoying
-# #CPPFLAGS += -Woverlength-strings         # complier compat: strings > [509 C90, 4095 C99] chars
-# #CPPFLAGS += -Wpacked                     # struct with __attribute__((packed)) that does nothing
-# #CPPFLAGS += -Wpadded                     # padding added to a struct. Noisy for argument structs
-# #CPPFLAGS += -Wpedantic                   # strict ISO C/C++
-# #CPPFLAGS += -Wsign-conversion            # implicit integer sign conversions, part of -Wconversion
-# #CPPFLAGS += -Wstack-protector            # only if -fstack-protector, on by default, warn fn not protect
-# #CPPFLAGS += -Wsuggest-attribute=const    # does what it sounds like - removed due to noise
-# #CPPFLAGS += -Wsuggest-attribute=pure     # does what it sounds like - removed due to noise
-# #CPPFLAGS += -Wswitch-enum #              # switch of enum doesn't explicitly cover all cases
-# #                                         ^ annoying in practice, let default: do its job
-# #CPPFLAGS += -Wsystem-headers             # warnings from system headers
-# #CPPFLAGS += -Wtraditional                # stuff gcc allows that "traditional" C doesn't
-# #CPPFLAGS += -Wundef                      # undefined identifier is evaluated in an `#if' directive
-# #                                         ^ Lots of library #if SAMD || SMAR21 stuff
-# #                                           Should probably be ifdef, but too much noise
-# #CPPFLAGS += -Wunsafe-loop-optimizations  # compiler can't divine loop bounds XXX maybe interesting?
-# #CPPFLAGS += -Wvariadic-macros            # can't be used in ISO C
-# #CPPFLAGS += -Wvector-operation-performance # perf option not appropriate for these systems
-# #CPPFLAGS += -Wvla                  -- XXX Didn't try, but interested
+#CPPFLAGS += -Wabi -Wabi-tag              # inter-compiler abi issues
+#CPPFLAGS += -Waggregate-return           # warn if things return struct's
+#CPPFLAGS += -Wcast-align                 # { char *c; int *i = (int*) c}, 1 byte -> 4 byte align
+#CPPFLAGS += -Wconversion                 # implicit conversion that may unexpectedly alter value
+#                                         ^ A ton of these from syscalls I think, XXX look later
+#CPPFLAGS += -Wdisabled-optimization      # gcc skipped an optimization for any of a thousand reasons
+#CPPFLAGS += -Wdouble-promotion           # warn if float -> double implicitly XXX maybe?
+#CPPFLAGS += -Wformat-signedness #        # { int i; printf("%d %u", i, i) } second bad (maybe annoying?)
+#                                         ^ Too obnoxious when you want hex of an int
+#CPPFLAGS += -Wfloat-conversion           # subset of -Wconversion
+#CPPFLAGS += -Winline                     # something marked `inline` wasn't inlined
+#CPPFLAGS += -Winvalid-pch                # bad precompiled header found in an include dir
+#CPPFLAGS += -Wmissing-include-dirs -- XXX Didn't try, afriad could be annoying
+#CPPFLAGS += -Woverlength-strings         # complier compat: strings > [509 C90, 4095 C99] chars
+#CPPFLAGS += -Wpacked                     # struct with __attribute__((packed)) that does nothing
+#CPPFLAGS += -Wpadded                     # padding added to a struct. Noisy for argument structs
+#CPPFLAGS += -Wpedantic                   # strict ISO C/C++
+#CPPFLAGS += -Wsign-conversion            # implicit integer sign conversions, part of -Wconversion
+#CPPFLAGS += -Wstack-protector            # only if -fstack-protector, on by default, warn fn not protect
+#CPPFLAGS += -Wsuggest-attribute=const    # does what it sounds like - removed due to noise
+#CPPFLAGS += -Wsuggest-attribute=pure     # does what it sounds like - removed due to noise
+#CPPFLAGS += -Wswitch-enum #              # switch of enum doesn't explicitly cover all cases
+#                                         ^ annoying in practice, let default: do its job
+#CPPFLAGS += -Wsystem-headers             # warnings from system headers
+#CPPFLAGS += -Wtraditional                # stuff gcc allows that "traditional" C doesn't
+#CPPFLAGS += -Wundef                      # undefined identifier is evaluated in an `#if' directive
+#                                         ^ Lots of library #if SAMD || SMAR21 stuff
+#                                           Should probably be ifdef, but too much noise
+#CPPFLAGS += -Wunsafe-loop-optimizations  # compiler can't divine loop bounds XXX maybe interesting?
+#CPPFLAGS += -Wvariadic-macros            # can't be used in ISO C
+#CPPFLAGS += -Wvector-operation-performance # perf option not appropriate for these systems
+#CPPFLAGS += -Wvla                  -- XXX Didn't try, but interested
 
-# # C-only warnings
-# override CFLAGS += -Wbad-function-cast #          # not obvious when this would trigger, could drop if annoying
-# override CFLAGS += -Wjump-misses-init #           # goto or switch skips over a variable initialziation
-# override CFLAGS += -Wmissing-prototypes #         # global fn defined w/out prototype (should be static or in .h)
-# override CFLAGS += -Wnested-externs #             # mis/weird-use of extern keyword
-# override CFLAGS += -Wold-style-definition #       # this garbage: void bar (a) int a; { }
+# C-only warnings
+override CFLAGS += -Wbad-function-cast #          # not obvious when this would trigger, could drop if annoying
+override CFLAGS += -Wjump-misses-init #           # goto or switch skips over a variable initialziation
+override CFLAGS += -Wmissing-prototypes #         # global fn defined w/out prototype (should be static or in .h)
+override CFLAGS += -Wnested-externs #             # mis/weird-use of extern keyword
+override CFLAGS += -Wold-style-definition #       # this garbage: void bar (a) int a; { }
 
-# #CFLAGS += -Wunsuffixed-float-constants # # { float f=0.67; if(f==0.67) printf("y"); else printf("n"); } => n
-# #                                         ^ doesn't seem to work right? find_north does funny stuff
+#CFLAGS += -Wunsuffixed-float-constants # # { float f=0.67; if(f==0.67) printf("y"); else printf("n"); } => n
+#                                         ^ doesn't seem to work right? find_north does funny stuff
 
-# #CFLAGS += -Wtraditional-conversion #     # prototype causes a conversion different than w/o prototype (?)
-# #                                         ^ real noisy
+#CFLAGS += -Wtraditional-conversion #     # prototype causes a conversion different than w/o prototype (?)
+#                                         ^ real noisy
 
 # # CXX-only warnings
 # override CXXFLAGS += -Wctor-dtor-privacy #        # unusable class b/c everything private and no friends
