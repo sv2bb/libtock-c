@@ -143,6 +143,30 @@ void _start(void* app_start __attribute__((unused)),
     "bl _c_start\n"
     "bkpt #255\n"
     );
+
+#elif defined(__riscv)
+
+  asm volatile (
+    // Set the stack point to something. We just kind of fix this to a value.
+    "lui sp, %hi(0x80005000)\n"
+    "addi sp, sp, %lo(0x80005000)\n"
+
+    // Set s0 (the frame pointer) to the start of the stack.
+    "add s0, sp, zero"
+  );
+
+  // 0x20002000 // Pin Value
+  // 0x20002004 // Pin Input Enable
+  // 0x20002008 // Pin Output Enable
+  // 0x2000200c // Output port
+
+  // Set gpio pin 0 as output
+  *((uint32_t*) 0x20002008) = 7;
+
+  // Assert gpio pin 0
+  *((uint32_t*) 0x2000200c) = 5;
+
+
 #else
 #error Missing initial stack setup trampoline for current arch.
 #endif

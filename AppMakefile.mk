@@ -26,12 +26,11 @@ TOCK_BOARD ?= hail
 include $(TOCK_USERLAND_BASE_DIR)/Program.mk
 
 # Single-arch libraries, to be phased out
-LEGACY_LIBS += $(TOCK_USERLAND_BASE_DIR)/newlib/libc.a
-LEGACY_LIBS += $(TOCK_USERLAND_BASE_DIR)/newlib/libm.a
-LEGACY_LIBS += $(TOCK_USERLAND_BASE_DIR)/libc++/libstdc++.a
-LEGACY_LIBS += $(TOCK_USERLAND_BASE_DIR)/libc++/libsupc++.a
-LEGACY_LIBS += $(TOCK_USERLAND_BASE_DIR)/libc++/libgcc.a
-
+# LEGACY_LIBS += $(TOCK_USERLAND_BASE_DIR)/newlib/libc.a
+# LEGACY_LIBS += $(TOCK_USERLAND_BASE_DIR)/newlib/libm.a
+# LEGACY_LIBS += $(TOCK_USERLAND_BASE_DIR)/libc++/libstdc++.a
+# LEGACY_LIBS += $(TOCK_USERLAND_BASE_DIR)/libc++/libsupc++.a
+# LEGACY_LIBS += $(TOCK_USERLAND_BASE_DIR)/libc++/libgcc.a
 
 
 # Rules to incorporate external libraries
@@ -102,8 +101,8 @@ $$(BUILDDIR)/$(1):
 # More info on our approach here: http://stackoverflow.com/questions/97338
 $$(BUILDDIR)/$(1)/%.o: %.c | $$(BUILDDIR)/$(1)
 	$$(TRACE_CC)
-	$$(Q)$(2)$$(CC) $$(CFLAGS) -mcpu=$(1) $$(CPPFLAGS) $$(CPPFLAGS_$(1)) -MF"$$(@:.o=.d)" -MG -MM -MP -MT"$$(@:.o=.d)@" -MT"$$@" "$$<"
-	$$(Q)$(2)$$(CC) $$(CFLAGS) -mcpu=$(1) $$(CPPFLAGS) $$(CPPFLAGS_$(1)) -c -o $$@ $$<
+	$$(Q)$(2)$$(CC) $$(CFLAGS) -march=$(1) -mabi=ilp32 -mcmodel=medlow $$(CPPFLAGS) $$(CPPFLAGS_$(1)) -MF"$$(@:.o=.d)" -MG -MM -MP -MT"$$(@:.o=.d)@" -MT"$$@" "$$<"
+	$$(Q)$(2)$$(CC) $$(CFLAGS) -march=$(1) -mabi=ilp32 -mcmodel=medlow $$(CPPFLAGS) $$(CPPFLAGS_$(1)) -c -o $$@ $$<
 
 $$(BUILDDIR)/$(1)/%.o: %.cc | $$(BUILDDIR)/$(1)
 	$$(TRACE_CXX)
@@ -126,16 +125,17 @@ OBJS_$(1) += $$(patsubst %.cpp,$$(BUILDDIR)/$(1)/%.o,$$(filter %.cpp, $$(CXX_SRC
 OBJS_$(1) += $$(patsubst %.cxx,$$(BUILDDIR)/$(1)/%.o,$$(filter %.cxx, $$(CXX_SRCS)))
 
 # Collect all desired built output.
-$$(BUILDDIR)/$(1)/$(1).elf: $$(OBJS_$(1)) $$(TOCK_USERLAND_BASE_DIR)/newlib/libc.a $$(LIBS_$(1)) $$(LAYOUT) | $$(BUILDDIR)/$(1)
+$$(BUILDDIR)/$(1)/$(1).elf: $$(OBJS_$(1)) $$(LIBS_$(1)) $$(LAYOUT) | $$(BUILDDIR)/$(1)
 	$$(TRACE_LD)
-	$$(Q)$(2)$$(CC) $$(CFLAGS) -mcpu=$(1) $$(CPPFLAGS) $$(CPPFLAGS_$(1))\
+	$$(Q)$(2)$$(CC) $$(CFLAGS) -march=$(1) -mabi=ilp32 -mcmodel=medlow $$(CPPFLAGS) $$(CPPFLAGS_$(1))\
 	    --entry=_start\
 	    -Xlinker --defsym=STACK_SIZE=$$(STACK_SIZE)\
 	    -Xlinker --defsym=APP_HEAP_SIZE=$$(APP_HEAP_SIZE)\
 	    -Xlinker --defsym=KERNEL_HEAP_SIZE=$$(KERNEL_HEAP_SIZE)\
 	    -T $$(LAYOUT)\
 	    -nostdlib\
-	    -Wl,--start-group $$(OBJS_$(1)) $$(LIBS_$(1)) $$(LEGACY_LIBS) -Wl,--end-group\
+	    -nostartfiles\
+	    -Wl,--start-group -lc -lgcc $$(OBJS_$(1)) $$(LIBS_$(1)) $$(LEGACY_LIBS) -Wl,--end-group\
 	    -Wl,-Map=$$(BUILDDIR)/$(1)/$(1).Map\
 	    -o $$@
 
@@ -144,6 +144,11 @@ $$(BUILDDIR)/$(1)/$(1).elf: $$(OBJS_$(1)) $$(TOCK_USERLAND_BASE_DIR)/newlib/libc
 $$(BUILDDIR)/$(1)/$(1).lst: $$(BUILDDIR)/$(1)/$(1).elf
 	$$(TRACE_LST)
 	$$(Q)$(2)$$(OBJDUMP) $$(OBJDUMP_FLAGS) $$< > $$@
+
+
+$$(BUILDDIR)/$(1)/$(1).bin: $$(BUILDDIR)/$(1)/$(1).elf
+	$$(Q)$(2)$$(OBJCOPY) -O binary $$< $$@
+
 
 # checks compiled ELF files to ensure that all libraries and applications were
 # built with the correct flags in order to work on a Tock board
@@ -249,7 +254,7 @@ $(BUILDDIR)/$(PACKAGE_NAME).tab: $(foreach platform, $(TOCK_ARCHS), $(BUILDDIR)/
 
 # Rules for building apps
 .PHONY:	all
-all:	$(BUILDDIR)/$(PACKAGE_NAME).tab size
+all:	$(BUILDDIR)/$(PACKAGE_NAME).tab $(foreach platform, $(TOCK_ARCHS), $(BUILDDIR)/$(call ARCH_FN,$(platform))/$(call ARCH_FN,$(platform)).bin)
 
 .PHONY: size
 size:	$(foreach platform, $(TOCK_ARCHS), $(BUILDDIR)/$(call ARCH_FN,$(platform))/$(call ARCH_FN,$(platform)).elf)
