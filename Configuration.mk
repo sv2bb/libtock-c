@@ -30,7 +30,7 @@ KERNEL_HEAP_SIZE ?= 1024
 PACKAGE_NAME ?= $(shell basename "$(shell pwd)")
 
 # Tock supported architectures
-TOCK_ARCHS ?= rv32imac|/Users/bradjc/git/libtock-c/riscv64-unknown-elf-gcc-8.2.0-2019.02.0-x86_64-apple-darwin/bin/riscv64-unknown-elf
+TOCK_ARCHS ?= rv32imac|riscv64-unknown-elf
 
 # Check if elf2tab exists, if not, install it using cargo.
 ELF2TAB ?= elf2tab
