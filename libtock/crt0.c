@@ -164,7 +164,7 @@ void _start(void* app_start __attribute__((unused)),
   *((uint32_t*) 0x20002008) = 7;
 
   // Assert gpio pin 0
-  *((uint32_t*) 0x2000200c) = 5;
+  *((uint32_t*) 0x2000200c) = 4;
 
 
 #else

@@ -15,14 +15,65 @@ ENTRY(_start)
  * actual location in flash where the app is placed.
  */
 MEMORY {
-    FLASH (rx) : ORIGIN = 0x40400000, LENGTH = PROG_LENGTH
-    SRAM (RWX) : ORIGIN = 0x80000000, LENGTH = RAM_LENGTH
+    FLASH (rx) : ORIGIN = 0x40430040, LENGTH = PROG_LENGTH
+    SRAM (RWX) : ORIGIN = 0x80004000, LENGTH = RAM_LENGTH
 }
 
 SECTIONS {
+    /* Section for just the app crt0 header.
+     * This must be first so that the app can find it.
+     */
+    .crt0_header :
+    {
+        _beginning = .; /* Start of the app in flash. */
+        /**
+         * Populate the header expected by `crt0`:
+         *
+         *  struct hdr {
+         *    uint32_t got_sym_start;
+         *    uint32_t got_start;
+         *    uint32_t got_size;
+         *    uint32_t data_sym_start;
+         *    uint32_t data_start;
+         *    uint32_t data_size;
+         *    uint32_t bss_start;
+         *    uint32_t bss_size;
+         *    uint32_t reldata_start;
+         *    uint32_t stack_size;
+         *  };
+         */
+        /* Offset of GOT symbols in flash */
+        LONG(LOADADDR(.got) - _beginning);
+        /* Offset of GOT section in memory */
+        LONG(_got);
+        /* Size of GOT section */
+        LONG(SIZEOF(.got));
+        /* Offset of data symbols in flash */
+        LONG(LOADADDR(.data) - _beginning);
+        /* Offset of data section in memory */
+        LONG(_data);
+        /* Size of data section */
+        LONG(SIZEOF(.data));
+        /* Offset of BSS section in memory */
+        LONG(_bss);
+        /* Size of BSS section */
+        LONG(SIZEOF(.bss));
+        /* First address offset after program flash, where elf2tab places
+         * .rel.data section */
+        LONG(LOADADDR(.endflash) - _beginning);
+        /* The size of the stack requested by this application */
+        LONG(STACK_SIZE);
+    } > FLASH =0xFF
 
-
-
+    /* App state section. Used for persistent app data.
+     * We put this first so that if the app code changes but the persistent
+     * data doesn't, the app_state can be preserved.
+     */
+    .wfr.app_state :
+    {
+        KEEP (*(.app_state))
+        . = ALIGN(4); /* Make sure we're word-aligned here */
+    } > FLASH =0xFF
 
     /* Text section, Code! */
     .text :
