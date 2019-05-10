@@ -11,6 +11,6 @@ C_SRCS := $(wildcard *.c)
 include $(TOCK_USERLAND_BASE_DIR)/AppMakefile.mk
 
 
-ff: build/rv32imac/rv32imac.bin
+ff: build/rv32imac/rv32imac.tbf
 	openocd -f arty-openocd-digilent.cfg \
-		-c "init; jtagspi_init 0 bscan_spi_xc7a35t.bit; jtagspi_program $< 0x400000; shutdown"
+		-c "init; jtagspi_init 0 bscan_spi_xc7a35t.bit; jtagspi_program $< 0x430000; shutdown"
