@@ -163,8 +163,17 @@ void _start(void* app_start __attribute__((unused)),
   // Set gpio pin 0 as output
   *((uint32_t*) 0x20002008) = 7;
 
+  register int a2 asm("a2");
+
+
   // Assert gpio pin 0
-  *((uint32_t*) 0x2000200c) = 4;
+  if(a2 < 0x0000000A){
+    *((uint32_t*) 0x2000200c) = 7;
+  }
+  else{
+    *((uint32_t*) 0x2000200c) = 1;
+  }
+  
 
 
 #else
