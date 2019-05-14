@@ -163,17 +163,21 @@ void _start(void* app_start __attribute__((unused)),
   // Set gpio pin 0 as output
   *((uint32_t*) 0x20002008) = 7;
 
+  // register volatile int a2 asm("a2");
   register int a2 asm("a2");
 
+  volatile uint32_t* led_addr = (uint32_t*) 0x2000200c;
 
-  // Assert gpio pin 0
-  if(a2 < 0x0000000A){
-    *((uint32_t*) 0x2000200c) = 7;
+  if(a2 == 0x00000007){
+    *led_addr = 7;
   }
   else{
-    *((uint32_t*) 0x2000200c) = 1;
+    *led_addr = 3;
   }
-  
+
+
+// need something here so that the code doesn't end in some undefined place
+while (1) {}
 
 
 #else

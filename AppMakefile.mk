@@ -263,6 +263,9 @@ size:	$(foreach platform, $(TOCK_ARCHS), $(BUILDDIR)/$(call ARCH_FN,$(platform))
 .PHONY: debug
 debug:	$(foreach platform, $(TOCK_ARCHS), $(BUILDDIR)/$(call ARCH_FN,$(platform))/$(call ARCH_FN,$(platform)).userland_debug.lst)
 
+.PHONY: lst
+lst:	$(foreach platform, $(TOCK_ARCHS), $(BUILDDIR)/$(call ARCH_FN,$(platform))/$(call ARCH_FN,$(platform)).lst)
+
 .PHONY:
 clean::
 	rm -Rf $(BUILDDIR)
