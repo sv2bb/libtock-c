@@ -168,12 +168,20 @@ void _start(void* app_start __attribute__((unused)),
 
   volatile uint32_t* led_addr = (uint32_t*) 0x2000200c;
 
+
   if(a2 == 0x00000007){
-    *led_addr = 7;
+     *led_addr = 7;
   }
   else{
     *led_addr = 3;
   }
+
+  // asm ( "li a7, 0x0000002\n\t"
+  //   "li a0, 0x00000002\n\t"
+  //   "li a1, 0x00000001\n\t"
+  //   "li a2, 0x00000002\n\t"
+  //   "li a3, 0x00000000\n\t"
+  //   "ecall": : :);
 
 
 // need something here so that the code doesn't end in some undefined place
