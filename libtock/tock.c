@@ -138,15 +138,14 @@ void* memop(uint32_t op_type, int arg1) {
   return ret;
 }
 
-void* exit(int status) {
+void exit(int status) {
   register int r0 asm ("r0") = status;
   asm volatile (
     "svc 5"
-    : "=r" (ret)
+    : 
     : "r" (r0)
     : "memory"
     );
-  return ret;
 }
 
 #elif defined(__riscv)

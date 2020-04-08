@@ -64,9 +64,9 @@ int _read(int fd, void *buf, uint32_t count)
 }
 void _exit(int __status)
 {
-  // while (666) {}
+   // while (666) {}
   exit(__status);
-  return __status;
+  // return __status;
 }
 int _getpid(void)
 {
